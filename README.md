@@ -1,8 +1,8 @@
-#Easy Quote Manager Service
+# Easy Quote Manager Service
 
 This Spring boot App is a secured backend for the Easy Quote Manager Flutter App.
 
-#####Configuration File Required:
+##### Configuration File Required:
 This app use profile for configuration
 you have to provide the files
 * database-dev.propreties
