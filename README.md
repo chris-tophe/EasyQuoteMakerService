@@ -1,6 +1,6 @@
-# Easy Quote Manager Service
+# Easy Quote Maker Service
 
-This Spring boot App is a secured backend for the Easy Quote Manager Flutter App.
+This Spring boot App is a secured backend for the Easy Quote Maker Flutter App.
 
 ##### Configuration File Required:
 This app use profile for configuration
@@ -22,7 +22,7 @@ server.ssl.key-store-password=
 server.ssl.key-store-type=pkcs12
 ```
 
-you also need to provide a keystore see
+you also need to provide a keystore for https connection see
 https://github.com/FiloSottile/mkcert
 
 
