@@ -3,7 +3,9 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-src/main/resources/database.properties
+src/main/resources/database-dev.properties
+src/main/resources/database-prod.properties
+src/main/resources/cert.p12
 
 ### STS ###
 .apt_generated
