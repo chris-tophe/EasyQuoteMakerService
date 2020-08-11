@@ -1,6 +1,6 @@
 package com.christophe.quoteService.configuration;
 
-import com.christophe.quoteService.component.AuthentificationFilter;
+import com.christophe.quoteService.component.TokenAuthenticationFilter;
 import com.christophe.quoteService.component.BCryptManager;
 import com.christophe.quoteService.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class GlobalSecurity extends WebSecurityConfigurerAdapter {
     private final UserService userService;
 
     @Autowired
-    AuthentificationFilter authentificationFilter;
+    TokenAuthenticationFilter tokenAuthenticationFilter;
 
     @Autowired
     public GlobalSecurity(UserService userService) {
@@ -59,6 +59,6 @@ public class GlobalSecurity extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 ;
 
-        http.addFilterBefore(authentificationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     }
 }

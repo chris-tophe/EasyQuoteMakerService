@@ -1,6 +1,6 @@
 package com.christophe.quoteService.controllers;
 
-import com.christophe.quoteService.component.JwtUtils;
+import com.christophe.quoteService.component.TokenUtils;
 import com.christophe.quoteService.models.AuthenticationRequest;
 import com.christophe.quoteService.models.AuthenticationResponse;
 import com.christophe.quoteService.models.User;
@@ -16,6 +16,7 @@ import java.util.Objects;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping(value = "/auth")
+
 public class AuthenticationController {
 
     @Autowired
@@ -25,7 +26,7 @@ public class AuthenticationController {
     AuthenticationManager authenticationManager;
 
     @Autowired
-    private JwtUtils jwtUtils;
+    private TokenUtils tokenUtils;
 
     @PostMapping()
     ResponseEntity<?> loginUser(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
@@ -41,7 +42,7 @@ public class AuthenticationController {
             throw new Exception("USER_LOCKED");
         }
         final User u = userService.loadUserByUsername(authenticationRequest.getUsername());
-        final String token = jwtUtils.generateToken(u);
+        final String token = tokenUtils.generateToken(u);
         return ResponseEntity.ok(new AuthenticationResponse(token));
     }
 

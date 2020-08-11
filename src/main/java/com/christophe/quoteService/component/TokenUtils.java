@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Component
-public class JwtUtils {
+public class TokenUtils {
 
     public static final Long JWT_TOKEN_VALIDITY = new Long(5*60*60);
 

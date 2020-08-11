@@ -1,37 +1,48 @@
 package com.christophe.quoteService.controllers;
 
-import com.christophe.quoteService.component.JwtUtils;
+import com.christophe.quoteService.component.TokenUtils;
+import com.christophe.quoteService.component.UserValidator;
 import com.christophe.quoteService.models.Role;
 import com.christophe.quoteService.models.User;
 import com.christophe.quoteService.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-
-import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
+import java.security.Principal;
 
-
+@Slf4j
 @RestController
 @CrossOrigin(origins="*",allowedHeaders = "*",allowCredentials = "true")
 @RequestMapping(value = "/user")
 public class UserController {
 
-    @Autowired
     UserRepository userRepository;
 
-    @Autowired
-    JwtUtils jwtUtils;
+    TokenUtils tokenUtils;
 
+    UserValidator userValidator;
+
+    @Autowired
+    public UserController(UserRepository userRepository, TokenUtils tokenUtils, UserValidator userValidator) {
+        this.userRepository = userRepository;
+        this.tokenUtils = tokenUtils;
+        this.userValidator = userValidator;
+    }
 
     @PostMapping()
-    ResponseEntity<User> addUser(@RequestBody User user, HttpServletRequest request, @AuthenticationPrincipal User authUser){
+    ResponseEntity<User> addUser(@RequestBody User user){
+        if (user == null) return ResponseEntity.noContent().build();
+        if (! userValidator.isValid(user)) return ResponseEntity.unprocessableEntity().build();
+        user.setAccountNonLocked(true);
+        user.setAccountNonExpired(true);
+        user.setCredentialsNonExpired(true);
+        user.setEnabled(true);
+        user.getRoles().add(Role.USER);
         User u = userRepository.save(user);
-        if (u == null) return ResponseEntity.noContent().build();
+        if (u.getId() == null) return ResponseEntity.noContent().build();
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .build()
@@ -40,16 +51,9 @@ public class UserController {
     }
 
     @GetMapping()
-    User getMe(HttpServletRequest request) {
-        String token = jwtUtils.getTokenFromRequest(request);
-        User u = userRepository.findByUsername(jwtUtils.getUsernameFromToken(token));
-        return u;
+    User getMe(Principal authUser) {
+        log.trace(authUser.toString());
+        return  userRepository.findByUsername(authUser.getName());
     }
-
-    @GetMapping(value = "/all")
-    Iterable<User> getUsers(){
-        return userRepository.findAll();
-    }
-
 
 }

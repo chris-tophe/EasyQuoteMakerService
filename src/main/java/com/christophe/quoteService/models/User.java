@@ -2,6 +2,7 @@ package com.christophe.quoteService.models;
 
 import com.christophe.quoteService.component.BCryptManager;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.hibernate.annotations.Cascade;
 import org.springframework.security.core.GrantedAuthority;
@@ -31,7 +32,7 @@ public class User implements UserDetails {
     @NonNull @Getter @Setter private String firstName;
     @NonNull @Getter @Setter private String lastName;
     @NonNull @Getter @Setter private String email;
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NonNull @Getter private String password;
     @Column(unique = true)
     @NonNull @Getter @Setter private String username;

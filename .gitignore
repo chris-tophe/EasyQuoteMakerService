@@ -6,6 +6,7 @@ target/
 src/main/resources/database-dev.properties
 src/main/resources/database-prod.properties
 src/main/resources/cert.p12
+logs/
 
 ### STS ###
 .apt_generated
