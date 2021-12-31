@@ -50,7 +50,7 @@ public class GlobalSecurity extends WebSecurityConfigurerAdapter {
                 .cors().and()
                 .csrf().disable()
                 .authorizeRequests()
-                    .antMatchers("/auth").permitAll()
+                    .antMatchers("/login").permitAll()
                     .antMatchers(HttpMethod.POST, "/user").permitAll()
                     .antMatchers(HttpMethod.GET,"/user").hasAuthority("USER")
                     .antMatchers(HttpMethod.GET,"/user/*").hasAnyAuthority("ADMIN","MANAGER")

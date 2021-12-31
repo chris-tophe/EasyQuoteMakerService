@@ -16,7 +16,7 @@ import java.util.function.Function;
 @Component
 public class TokenUtils {
 
-    public static final Long JWT_TOKEN_VALIDITY = new Long(5*60*60);
+    public static final Long JWT_TOKEN_VALIDITY = (long) (5 * 60 * 60);
 
     @Value("jwt.secret")
     private String secret;
@@ -62,7 +62,7 @@ public class TokenUtils {
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY*1000))
+                .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
                 .signWith(SignatureAlgorithm.HS512, secret)
                 .compact();
     }
@@ -76,14 +76,14 @@ public class TokenUtils {
         return (username.equals(user.getUsername()) && !isTokenExpired(token));
     }
 
-    public String bearerRemove(String token){
+    public String bearerRemove(String token) {
         if (token.startsWith("Bearer ")) {
             token = token.substring(7);
         }
         return token;
     }
 
-    public String getTokenFromRequest(HttpServletRequest request){
+    public String getTokenFromRequest(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
         return bearerRemove(token);
     }

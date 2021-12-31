@@ -3,9 +3,12 @@ package com.christophe.quoteService;
 import com.christophe.quoteService.models.Role;
 import com.christophe.quoteService.models.User;
 import com.christophe.quoteService.repository.UserRepository;
+import com.github.javafaker.Faker;
+import lombok.var;
 import org.apache.catalina.Context;
 import org.apache.tomcat.util.descriptor.web.SecurityCollection;
 import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -14,7 +17,6 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
-
 
 
 @SpringBootApplication
@@ -42,50 +44,44 @@ public class QuoteServiceApplication {
 	}
 
 	@Bean
+	public ModelMapper modelMapper() {
+		return new ModelMapper();
+	}
+
+	@Bean
 	@Autowired
 	CommandLineRunner addUser(UserRepository userRepository){
 		return args -> {
 
-			User api = new User();
-			api.setEnabled(true);
-			api.setCredentialsNonExpired(true);
-			api.setAccountNonLocked(true);
-			api.setAccountNonExpired(true);
-			api.getRoles().add(Role.API);
-			api.setUsername("API");
-			api.setPassword("API");
-			userRepository.save(api);
+			User admin = new User();
+			admin.setUsername("admin");
+			admin.setPassword("admin");
+			admin.setFirstName("Admin");
+			admin.setLastName("Admin");
+			admin.setEmail("admin@admin.com");
+			admin.getRoles().add(Role.ADMIN);
+			admin.setAccountNonExpired(true);
+			admin.setAccountNonLocked(true);
+			admin.setCredentialsNonExpired(true);
+			admin.setEnabled(true);
+			userRepository.save(admin);
 
-			User u = new User();
-			u.setUsername("admin");
-			u.setPassword("admin");
-			u.setFirstName("ad");
-			u.setLastName("min");
-			u.setEmail("admin@admin.com");
-			u.getRoles().add(Role.ADMIN);
-			u.getRoles().add(Role.USER);
-			u.setAccountNonExpired(true);
-			u.setAccountNonLocked(true);
-			u.setCredentialsNonExpired(true);
-			u.setEnabled(true);
-			userRepository.save(u);
-			User v = new User();
-			v.setLastName("tophe");
-			v.setFirstName("Chris");
-			v.setUsername("chris");
-			v.setPassword("chris");
-			v.setEmail("chris@chris.com");
-			v.getRoles().add(Role.USER);
-			v.setAccountNonExpired(true);
-			v.setAccountNonLocked(true);
-			v.setCredentialsNonExpired(true);
-			v.setEnabled(true);
-			User w = userRepository.findByUsername("admin");
-			v.setUserManager(w);
-			userRepository.save(w);
-			userRepository.save(v);
+			var faker = new Faker();
 
-
+			for (int i = 0 ; i < 100; i++){
+				User u = new User();
+				u.setFirstName(faker.name().firstName());
+				u.setLastName(faker.name().lastName());
+				u.setUsername( u.getFirstName() + "." + u.getLastName());
+				u.setPassword(faker.internet().password(8,10));
+				u.setEmail(faker.internet().emailAddress(u.getUsername()));
+				u.getRoles().add(Role.USER);
+				u.setAccountNonExpired(true);
+				u.setAccountNonLocked(true);
+				u.setCredentialsNonExpired(true);
+				u.setEnabled(true);
+				userRepository.save(u);
+			}
 		};
 	}
 

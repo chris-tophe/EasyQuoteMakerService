@@ -5,41 +5,50 @@ import com.christophe.quoteService.models.AuthenticationRequest;
 import com.christophe.quoteService.models.AuthenticationResponse;
 import com.christophe.quoteService.models.User;
 import com.christophe.quoteService.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
 
-
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping(value = "/auth")
+@RequestMapping(value = "/login")
 
 public class AuthenticationController {
 
-    @Autowired
-    UserService userService;
+    final UserService userService;
 
-    @Autowired
-    AuthenticationManager authenticationManager;
+    final AuthenticationManager authenticationManager;
 
-    @Autowired
-    private TokenUtils tokenUtils;
+    private final TokenUtils tokenUtils;
+
+    public AuthenticationController(UserService userService, AuthenticationManager authenticationManager,
+            TokenUtils tokenUtils) {
+        this.userService = userService;
+        this.authenticationManager = authenticationManager;
+        this.tokenUtils = tokenUtils;
+    }
 
     @PostMapping()
-    ResponseEntity<?> loginUser(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
-        Objects.requireNonNull(authenticationRequest.getUsername());
-        Objects.requireNonNull(authenticationRequest.getPassword());
+    ResponseEntity<?> login(@RequestBody AuthenticationRequest authenticationRequest) {
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
+            Objects.requireNonNull(authenticationRequest.getUsername());
+            Objects.requireNonNull(authenticationRequest.getPassword());
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                    authenticationRequest.getUsername(), authenticationRequest.getPassword()));
         } catch (DisabledException e) {
-            throw new Exception("USER_DISABLED");
+            // throw new Exception();
+            return new ResponseEntity<String>("USER_DISABLED", HttpStatus.UNAUTHORIZED);
         } catch (BadCredentialsException e) {
-            throw new Exception("INVALID_CREDENTIALS");
+            // throw new Exception("INVALID_CREDENTIALS");
+            return new ResponseEntity<String>("INVALID_CREDENTIALS", HttpStatus.UNAUTHORIZED);
         } catch (LockedException e) {
-            throw new Exception("USER_LOCKED");
+            // throw new Exception("USER_LOCKED");
+            return new ResponseEntity<String>("USER_LOCKED", HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("Unknown error", HttpStatus.NOT_ACCEPTABLE);
         }
         final User u = userService.loadUserByUsername(authenticationRequest.getUsername());
         final String token = tokenUtils.generateToken(u);
